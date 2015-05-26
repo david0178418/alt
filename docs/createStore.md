@@ -287,6 +287,6 @@ class MyStore {
 }
 ```
 
-## StoreModel#_storeName
+## StoreModel#displayName
 
 This is a reference to the store's internal name. This is either the identifier you provided to `createStore` or StoreModel's class name.

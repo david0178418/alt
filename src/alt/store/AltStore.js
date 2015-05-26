@@ -10,7 +10,7 @@ class AltStore {
     }
     this.state = state || model
 
-    this._storeName = model._storeName
+    this.displayName = model.displayName
     this.boundListeners = model.boundListeners
     this.StoreModel = StoreModel
 
