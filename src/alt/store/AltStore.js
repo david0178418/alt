@@ -3,8 +3,11 @@ import transmitter from 'transmitter'
 
 class AltStore {
   constructor(alt, model, state, StoreModel) {
+    const lifecycleEvents = model.lifecycleEvents
     this.transmitter = transmitter()
-    this.lifecycle = model.lifecycleEvents
+    this.lifecycle = (event, x) => {
+      if (lifecycleEvents[event]) lifecycleEvents[event].push(x)
+    }
     this.state = state || model
 
     this._storeName = model._storeName
@@ -15,7 +18,7 @@ class AltStore {
 
     // Register dispatcher
     this.dispatchToken = alt.dispatcher.register((payload) => {
-      this.lifecycle.beforeEach.push({
+      this.lifecycle('beforeEach', {
         payload,
         state: this.state
       })
@@ -27,7 +30,7 @@ class AltStore {
           result = model.actionListeners[payload.action](payload.data)
         } catch (e) {
           if (model.handlesOwnErrors) {
-            this.lifecycle.error.push({
+            this.lifecycle('error', {
               error: e,
               payload,
               state: this.state
@@ -42,13 +45,13 @@ class AltStore {
         }
       }
 
-      this.lifecycle.afterEach.push({
+      this.lifecycle('afterEach', {
         payload,
         state: this.state
       })
     })
 
-    this.lifecycle.init.push()
+    this.lifecycle('init')
   }
 
   emitChange() {
@@ -61,7 +64,7 @@ class AltStore {
   }
 
   unlisten(cb) {
-    this.lifecycle.unlisten.push()
+    this.lifecycle('unlisten')
     this.transmitter.unsubscribe(cb)
   }
 
